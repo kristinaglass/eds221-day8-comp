@@ -25,6 +25,7 @@ library(gapminder)
 
 # Spatial
 library(sf)
+library(gapminder)
 ```
 
 ```{r}
@@ -76,4 +77,45 @@ ggplot(lizards, aes(x = total_length, y = weight)) +
                      expand = c(0,0)) +
   scale_color_gradientn(colors = c("yellow", "orange", "purple"))
  
+```
+
+```{r}
+ggplot(data = gapminder, aes(x = lifeExp, y = gdpPercap)) +
+  geom_point() +
+  annotate("text", x = 40, y = 90000, label = "A LABEL") +
+  geom_hline(yintercept = 70000, linetype = "dotted", color = "purple") +
+  geom_vline(xintercept = mean(gapminder$lifeExp))
+```
+
+```{r}
+gapminder %>% 
+  filter(year == 2002, continent == "Europe") %>% 
+  ggplot(aes(x = gdpPercap, y = lifeExp)) +
+  geom_point() +
+  geom_text_repel(aes(label = country)) +
+  gghighlight(country == "Poland", label_key = country)
+```
+
+create a ggplot chart using data only from 2007, the highlight all countries in europe, adding their country name as the lable
+
+```{r}
+gapminder %>% 
+  filter(year == 2007) %>% 
+  ggplot(aes(x = gdpPercap, y = lifeExp)) +
+  geom_point() +
+  geom_text_repel(aes(label = country)) +
+  gghighlight(continent == "Europe", label_key = country)
+```
+
+```{r}
+jornada_veg <- read_sf(here("data_raw", "spatial_vegetation", "doc.kml")) %>% 
+  select(name = Name)
+##select ca be used to move things around and rename things additionally
+ggplot() +
+  geom_sf(data = jornada_veg, aes(fill = name), color = NA) +
+  theme_minimal() +
+  scale_fill_paletteer_d(`"Redmonder::qMSOPap"`) +
+  theme(panel.background = element_rect(color = "purple", size = 5, fill = "slategrey"), plot.background = element_rect(fill = "lightblue"),
+        panel.grid.major.x = element_line(color = "magenta"),
+        axis.text.x = element_text(color = "lavender"))
 ```
